@@ -1,6 +1,6 @@
 package com.example;
 
-import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -9,16 +9,21 @@ import javax.ws.rs.Path;
 import org.glassfish.jersey.server.mvc.Viewable;
 
 import com.example.model.MessageDTO;
-import com.example.model.Messages;
+import com.example.model.MessagesDAO;
 import com.example.model.UserDTO;
 
 @Path("/")
 public class MyResources {
-	@Inject
-	private Messages messages;
-
+	private String jndiName = "jdbc/__default";
+			
 	private String userName = "KCG";
-
+	MessagesDAO messageDAO; 
+	
+	public MyResources() throws NamingException {
+		// jndiNameが間違っている場合、NamingExceptionを投げる
+		messageDAO = new MessagesDAO(jndiName);
+	}
+	
 	@GET
 	@Path("")
 	public Viewable home() {
@@ -50,21 +55,22 @@ public class MyResources {
 	@GET
 	@Path("list")
 	public Viewable getMessage() {
-		//　引数で渡した値は、JSP側では model という変数で受け取れます。		
+		//　引数で渡した値は、JSP側では model という変数で受け取れます。
+		messageDAO.getAll();
 		return new Viewable("/message", userName);
 	}
 
 	@POST
 	@Path("list")
 	public Viewable postMessage(@BeanParam MessageDTO mes) {
-		messages.add(mes);
+		messageDAO.create(mes);
 		return new Viewable("/message", userName);
 	}
 
 	@GET
 	@Path("clear")
 	public Viewable clearMessage() {
-		messages.clear();
+		messageDAO.deleteAll();
 		return new Viewable("/redirect", "list");
 	}
 
