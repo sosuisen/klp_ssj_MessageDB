@@ -6,7 +6,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.glassfish.jersey.server.mvc.Viewable;
+import org.glassfish.jersey.server.mvc.Template;
 
 import com.example.model.MessageDTO;
 import com.example.model.MessagesDAO;
@@ -14,64 +14,66 @@ import com.example.model.UserDTO;
 
 @Path("/")
 public class MyResources {
-	private String jndiName = "jdbc/__default";
-			
 	private String userName = "KCG";
-	MessagesDAO messageDAO; 
+	MessagesDAO messageDAO;
 	
 	public MyResources() throws NamingException {
-		// jndiNameが間違っている場合、NamingExceptionを投げる
-		messageDAO = new MessagesDAO(jndiName);
+		messageDAO = new MessagesDAO();
 	}
-	
+
 	@GET
 	@Path("")
-	public Viewable home() {
-		// index.jsp の拡張子は省略して index と書けます。
-		// JAX-RS に限らず、フレームワークではこの手の省略がよく見られます。
-		return new Viewable("/index");
+	@Template(name = "/index")
+	public String home() {
+		// @Templateを使うときの戻り値はvoidにできないので、代わりに""を返しています。
+		return "";
 	}
-	
+
 	@GET
 	@Path("login")
-	public Viewable getLogin() {
-		return new Viewable("/login");		
+	@Template(name = "/login")
+	public String getLogin() {
+		return "";
 	}
 
 	@POST
 	@Path("login")
-	public Viewable postLogin(@BeanParam UserDTO user) {
+	@Template(name = "/login")
+	public String postLogin(@BeanParam UserDTO user) {
 		if (user.getName().equals("kcg") && user.getPassword().equals("foobar")) {
-			// return Response.temporaryRedirect(URI.create("list")).build();
-			// Response型とViewable型の二つの戻り値を持つことはできないため、
-			// JSTLのリダイレクトタグを用いてリダイレクトさせます。
-			// redirect.jsp 参照。
-			return new Viewable("/redirect", "list");
+			// login.jsp の中で条件分岐してlistへリダイレクトします。
+			return "success";
 		}
-		var error = "ユーザ名またはパスワードが異なります"; 
-		return new Viewable("/login", error);
+		return "ユーザ名またはパスワードが異なります";
 	}
 
 	@GET
 	@Path("list")
-	public Viewable getMessage() {
-		//　引数で渡した値は、JSP側では model という変数で受け取れます。
+	@Template(name = "/message")
+	public String getMessage() {
+		/**
+		 * まだ厳密な認証をしていないため、ログインフォームを無視して
+		 * http://localhost:8080/MessageDB/message/list
+		 * を直接開くことができてしまいます。
+		 */
 		messageDAO.getAll();
-		return new Viewable("/message", userName);
+		return userName;
 	}
 
 	@POST
 	@Path("list")
-	public Viewable postMessage(@BeanParam MessageDTO mes) {
+	@Template(name = "/message")
+	public String postMessage(@BeanParam MessageDTO mes) {
+		// フォーム側にidの値はないので0が入っています。
 		messageDAO.create(mes);
-		return new Viewable("/message", userName);
+		return userName;
 	}
 
 	@GET
 	@Path("clear")
-	public Viewable clearMessage() {
+	@Template(name = "/redirect")
+	public String clearMessage() {
 		messageDAO.deleteAll();
-		return new Viewable("/redirect", "list");
+		return "list";
 	}
-
 }

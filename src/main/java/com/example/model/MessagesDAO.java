@@ -14,16 +14,16 @@ import javax.sql.DataSource;
  * DAO for messages table
  */
 public class MessagesDAO {
-	DataSource ds;
-
+	private DataSource ds;
+	
 	@Inject
 	private Messages messages;
 
-	public MessagesDAO(String jndiName) throws NamingException {
-		InitialContext ctx = new InitialContext();
-		ds = (DataSource) ctx.lookup(jndiName);
+	public MessagesDAO () throws NamingException  {
+		var ctx = new InitialContext();
+		ds = (DataSource) ctx.lookup("jdbc/__default");	
 	}
-
+	
 	public void getAll() {
 		try (
 				Connection conn = ds.getConnection();
