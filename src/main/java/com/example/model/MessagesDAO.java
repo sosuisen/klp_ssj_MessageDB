@@ -5,25 +5,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 /**
  * DAO for messages table
  */
+@ApplicationScoped
 public class MessagesDAO {
+	/**
+	 * JNDIで管理されたDataSourceオブジェクトは@Resourceアノテーションで
+	 * 取得できます。lookup属性でJNDI名を渡します。
+	 */
+	@Resource(lookup = "jdbc/__default")
 	private DataSource ds;
-	
+
 	@Inject
 	private Messages messages;
 
-	public MessagesDAO () throws NamingException  {
-		var ctx = new InitialContext();
-		ds = (DataSource) ctx.lookup("jdbc/__default");	
-	}
-	
 	public void getAll() {
 		try (
 				Connection conn = ds.getConnection();

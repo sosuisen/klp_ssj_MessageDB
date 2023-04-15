@@ -1,6 +1,6 @@
 package com.example;
 
-import javax.naming.NamingException;
+import javax.inject.Inject;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,11 +15,16 @@ import com.example.model.UserDTO;
 @Path("/")
 public class MyResources {
 	private String userName = "KCG";
-	MessagesDAO messageDAO;
-	
-	public MyResources() throws NamingException {
-		messageDAO = new MessagesDAO();
-	}
+
+	/**
+	 * MessageDAOクラスは中でインジェクション（@Inject）を用いています。
+	 * この場合、messageDAO = new MessageDAO()のようにコンストラクタを呼び出して
+	 * インスタンスを作ると、上記@Injectが動作しません。
+	 * （自作クラス内における@Inject動作の仕様がそうなので）
+	 * messageDAOも下記のようにインジェクションで作成する必要があります。
+	 */
+	@Inject
+	private MessagesDAO messageDAO;
 
 	@GET
 	@Path("")
@@ -62,11 +67,13 @@ public class MyResources {
 
 	@POST
 	@Path("list")
-	@Template(name = "/message")
+	@Template(name = "/redirect")
 	public String postMessage(@BeanParam MessageDTO mes) {
 		// フォーム側にidの値はないので0が入っています。
 		messageDAO.create(mes);
-		return userName;
+		// ここで messageDAO.getAll()を呼んでもよいが、
+		// 表示処理は GET list で集中管理したいので、リダイレクト。
+		return "list";
 	}
 
 	@GET

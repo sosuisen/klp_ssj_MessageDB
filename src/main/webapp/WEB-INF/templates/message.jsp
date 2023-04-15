@@ -20,7 +20,7 @@
 	<hr>
 	<h1>メッセージ一覧</h1>
 	<c:forEach var="mes" items="${messages}">
-		<div style="color:${mes.important ? 'red' : 'black'}">${mes.name}:${mes.message}</div>
+		<div>${mes.name}:${mes.message}</div>
 	</c:forEach>
 	<p>
 		<a href="./">ログアウト</a>
