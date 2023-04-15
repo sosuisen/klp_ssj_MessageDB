@@ -41,6 +41,26 @@ public class MessagesDAO {
 		}
 	}
 
+	public void search(String keyword) {
+		try (
+				Connection conn = ds.getConnection();
+				PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM messages WHERE message LIKE ?");) {
+			// 部分一致で検索する場合、LIKEの後には'%キーワード%'と書く。
+			// 以下、文字列に文字列を埋め込むためのフォーマット指定子は%s
+			// フォーマット指定子%をエスケープするには%%と書く
+			pstmt.setString(1, "%%%s%%".formatted(keyword));
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				int myId = rs.getInt("id");
+				String name = rs.getString("name");
+				String message = rs.getString("message");
+				messages.add(new MessageDTO(myId, name, message));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void create(MessageDTO mesDTO) {
 		try (
 				Connection conn = ds.getConnection();
