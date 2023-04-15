@@ -2,6 +2,7 @@ package com.example;
 
 import javax.inject.Inject;
 import javax.ws.rs.BeanParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -83,4 +84,14 @@ public class MyResources {
 		messageDAO.deleteAll();
 		return "list";
 	}
+	
+
+	@POST
+	@Path("search")
+	@Template(name = "/message")
+	public String postMessage(@FormParam("keyword") String keyword) {
+		messageDAO.search(keyword);
+		return userName;
+	}
+
 }

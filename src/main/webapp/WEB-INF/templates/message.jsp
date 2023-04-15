@@ -14,6 +14,10 @@
 			name="message"> 
 		<button>送信</button>
 	</form>
+	<form action="search" method="POST">
+		検索語：<input type="text" name="keyword">
+		<button>検索</button>
+	</form>
 	<form action="clear" method="GET">
 		<button>Clear</button>
 	</form>
