@@ -78,7 +78,14 @@ public class MyResources {
 	@Path("list")
 	@Template(name = "/message")
 	public String postMessage(@BeanParam MessageDTO mes) {
-		// フォーム側にidの値はないので0が入っています。
+		/*
+		 * フォーム側にidの値はないので0が入っています。
+		 * nameの値もないのでnullが入っています。
+		 * ログインしているので、nameの値はuser.getName()で取得します。
+		 * フォームから取得するパラメータが少ないので、
+		 * @BeanParamではなく@FormParamでも十分ですが、参考まで。
+		 */
+		mes.setName(user.getName());
 		messageDAO.create(mes);
 		messageDAO.getAll();
 		return "";

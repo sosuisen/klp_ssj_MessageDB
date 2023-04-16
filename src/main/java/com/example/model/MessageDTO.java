@@ -4,7 +4,7 @@ import javax.ws.rs.FormParam;
 
 // setter/getterその他を追加
 @lombok.Data
-// new でインスタンスを作りたいので、
+// MessageDAOクラス内では、new でMessageDTOのインスタンスを作りたいので、
 // 全フィールドを引数にもつコンストラクタを追加
 @lombok.AllArgsConstructor
 // 上記のようにコンストラクタを明示的に追加した場合に限り、

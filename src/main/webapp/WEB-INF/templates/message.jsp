@@ -10,9 +10,9 @@
 </head>
 <body>
 	${user.name}さん、こんにちは！
+	<hr>
 	<form action="list" method="POST">
-		投稿者名：<input type="text" name="name"> メッセージ：<input type="text"
-			name="message">
+		メッセージ：<input type="text" name="message">
 		<button>送信</button>
 	</form>
 	<form action="search" method="POST">
