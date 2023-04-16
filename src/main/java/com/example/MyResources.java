@@ -38,7 +38,7 @@ public class MyResources {
 	@Path("")
 	@Template(name = "/index")
 	public String home() {
-		// @Templateを使うときの戻り値はvoidにできないので、代わりに""を返しています。
+		// @Templateを使うとき、Viewへ渡す値が特になければ""を返します。
 		return "";
 	}
 
