@@ -45,7 +45,7 @@ public class MyResources {
 	@Path("login")
 	@Template(name = "/login")
 	public String getLogin() {
-		user.setName("");
+		user.setName(null);
 		return "";
 	}
 
@@ -65,7 +65,7 @@ public class MyResources {
 	@Path("list")
 	@Template(name = "/message")
 	public String getMessage() {
-		if (user.getName().equals("")) {
+		if (user.getName() == null) {
 			// 認証に成功していない場合は、loginへリダイレクト
 			throw new RedirectException("login");
 		}

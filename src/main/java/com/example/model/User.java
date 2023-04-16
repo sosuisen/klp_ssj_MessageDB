@@ -9,6 +9,6 @@ import javax.inject.Named;
 @Named
 @SessionScoped
 public class User implements Serializable {
-	private String name;
+	private String name = null;
 }
 
