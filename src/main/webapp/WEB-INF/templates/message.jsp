@@ -5,13 +5,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link href="../app.css" rel="stylesheet">
 <title>メッセージの累積</title>
 </head>
 <body>
-	${model}さん、こんにちは！
+	${user.name}さん、こんにちは！
 	<form action="list" method="POST">
 		投稿者名：<input type="text" name="name"> メッセージ：<input type="text"
-			name="message"> 
+			name="message">
 		<button>送信</button>
 	</form>
 	<form action="search" method="POST">
@@ -27,7 +28,7 @@
 		<div>${mes.name}:${mes.message}</div>
 	</c:forEach>
 	<p>
-		<a href="./">ログアウト</a>
+		<a href="./login">ログアウト</a>
 	</p>
 </body>
 </html>
