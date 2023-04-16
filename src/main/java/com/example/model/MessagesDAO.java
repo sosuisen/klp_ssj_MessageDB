@@ -76,8 +76,6 @@ public class MessagesDAO {
 			rs.next();
 			int id = rs.getInt(1);
 			mesDTO.setId(id);
-
-			messages.add(mesDTO);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -88,7 +86,6 @@ public class MessagesDAO {
 				Connection conn = ds.getConnection();
 				PreparedStatement pstmt = conn.prepareStatement("DELETE from messages");) {
 			pstmt.executeUpdate();
-			messages.clear();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
