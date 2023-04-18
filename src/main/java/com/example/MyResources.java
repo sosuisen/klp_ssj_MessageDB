@@ -89,7 +89,7 @@ public class MyResources {
 	@POST
 	@Path("search")
 	@Template(name = "/message")
-	public String postMessage(@FormParam("keyword") String keyword) {
+	public String postSearch(@FormParam("keyword") String keyword) {
 		messageDAO.search(keyword);
 		return userName;
 	}
