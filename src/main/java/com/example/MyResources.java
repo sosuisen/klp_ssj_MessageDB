@@ -1,22 +1,26 @@
 package com.example;
 
+import java.net.URI;
+
 import javax.inject.Inject;
 import javax.ws.rs.BeanParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.server.mvc.Template;
 
 import com.example.model.MessageDTO;
 import com.example.model.MessagesDAO;
+import com.example.model.User;
 import com.example.model.UserDTO;
 
 @Path("/")
 public class MyResources {
-	private String userName = "KCG";
-
 	/**
 	 * MessageDAOクラスは中でインジェクション（@Inject）を用いています。
 	 * この場合、messageDAO = new MessageDAO()のようにコンストラクタを呼び出して
@@ -27,11 +31,14 @@ public class MyResources {
 	@Inject
 	private MessagesDAO messageDAO;
 
+	@Inject
+	private User user;
+
 	@GET
 	@Path("")
 	@Template(name = "/index")
 	public String home() {
-		// @Templateを使うときの戻り値はvoidにできないので、代わりに""を返しています。
+		// @Templateを使うとき、Viewへ渡す値が特になければ""を返します。
 		return "";
 	}
 
@@ -39,16 +46,18 @@ public class MyResources {
 	@Path("login")
 	@Template(name = "/login")
 	public String getLogin() {
+		user.setName(null);
 		return "";
 	}
 
 	@POST
 	@Path("login")
 	@Template(name = "/login")
-	public String postLogin(@BeanParam UserDTO user) {
-		if (user.getName().equals("kcg") && user.getPassword().equals("foobar")) {
+	public String postLogin(@BeanParam UserDTO userDTO) {
+		if (userDTO.getName().equals("kcg") && userDTO.getPassword().equals("foo")) {
 			// login.jsp の中で条件分岐してlistへリダイレクトします。
-			return "success";
+			user.setName(userDTO.getName());
+			throw new RedirectException("list");
 		}
 		return "ユーザ名またはパスワードが異なります";
 	}
@@ -57,32 +66,51 @@ public class MyResources {
 	@Path("list")
 	@Template(name = "/message")
 	public String getMessage() {
-		/**
-		 * まだ厳密な認証をしていないため、ログインフォームを無視して
-		 * http://localhost:8080/MessageDB/message/list
-		 * を直接開くことができてしまいます。
-		 */
+		if (user.getName() == null) {
+			// 認証に成功していない場合は、loginへリダイレクト
+			throw new RedirectException("login");
+		}
 		messageDAO.getAll();
-		return userName;
+		return "";
 	}
 
 	@POST
 	@Path("list")
-	@Template(name = "/redirect")
+	@Template(name = "/message")
 	public String postMessage(@BeanParam MessageDTO mes) {
-		// フォーム側にidの値はないので0が入っています。
+		/*
+		 * フォーム側にidの値はないので0が入っています。
+		 * nameの値もないのでnullが入っています。
+		 * ログインしているので、nameの値はuser.getName()で取得します。
+		 * フォームから取得するパラメータが少ないので、
+		 * @BeanParamではなく@FormParamでも十分ですが、参考まで。
+		 */
+		mes.setName(user.getName());
 		messageDAO.create(mes);
-		// ここで messageDAO.getAll()を呼んでもよいが、
-		// 表示処理は GET list で集中管理したいので、リダイレクト。
-		return "list";
+		messageDAO.getAll();
+		return "";
 	}
 
 	@GET
 	@Path("clear")
-	@Template(name = "/redirect")
-	public String clearMessage() {
+	public void clearMessage() {
 		messageDAO.deleteAll();
-		return "list";
+		throw new RedirectException("list");
+	}
+
+	@lombok.Getter
+	@lombok.Setter
+	@lombok.AllArgsConstructor
+	public static class RedirectException extends RuntimeException {
+		private String redirectTo;
+	}
+
+	@Provider
+	public static class RedirectExceptionMapper implements ExceptionMapper<RedirectException> {
+		@Override
+		public Response toResponse(RedirectException exception) {
+			return Response.seeOther(URI.create(exception.redirectTo)).build();
+		}
 	}
 	
 
@@ -91,7 +119,7 @@ public class MyResources {
 	@Template(name = "/message")
 	public String postSearch(@FormParam("keyword") String keyword) {
 		messageDAO.search(keyword);
-		return userName;
+		return "";
 	}
 
 }

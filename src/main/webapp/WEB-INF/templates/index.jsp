@@ -3,15 +3,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>メッセージアプリ</title>
+<meta charset="UTF-8">
+<link href="../app.css" rel="stylesheet">
+<title>メッセージアプリ</title>
 </head>
 <body>
+	<p>メッセージアプリへようこそ！</p>
 	<p>
-		メッセージアプリへようこそ！
-	</p>
+		このページのURLが <a href="http://localhost:8080/MessageDB/message/">http://localhost:8080/MessageDB/message/</a><br>
+		であることを確認してください（末尾に/があります。）<br>
+		そうでなければ<a href="http://localhost:8080/MessageDB/message/">このリンク</a>を開いてください。
 	<p>
-		<a href="login">ログイン</a>
+	確認後、<a href="login">「ログイン」</a>
 	</p>
 </body>
 </html>
