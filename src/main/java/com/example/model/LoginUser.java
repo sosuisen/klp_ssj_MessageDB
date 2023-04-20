@@ -8,7 +8,7 @@ import javax.inject.Named;
 @lombok.Data
 @Named
 @SessionScoped
-public class User implements Serializable {
+public class LoginUser implements Serializable {
 	private String name = null;
 }
 

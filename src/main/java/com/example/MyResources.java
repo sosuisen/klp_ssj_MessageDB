@@ -14,9 +14,9 @@ import javax.ws.rs.ext.Provider;
 
 import org.glassfish.jersey.server.mvc.Template;
 
+import com.example.model.LoginUser;
 import com.example.model.MessageDTO;
 import com.example.model.MessagesDAO;
-import com.example.model.User;
 import com.example.model.UserDTO;
 
 @Path("/")
@@ -32,7 +32,7 @@ public class MyResources {
 	private MessagesDAO messageDAO;
 
 	@Inject
-	private User user;
+	private LoginUser loginUser;
 
 	@GET
 	@Path("")
@@ -46,7 +46,7 @@ public class MyResources {
 	@Path("login")
 	@Template(name = "/login")
 	public String getLogin() {
-		user.setName(null);
+		loginUser.setName(null);
 		return "";
 	}
 
@@ -56,7 +56,7 @@ public class MyResources {
 	public String postLogin(@BeanParam UserDTO userDTO) {
 		if (userDTO.getName().equals("kcg") && userDTO.getPassword().equals("foo")) {
 			// login.jsp の中で条件分岐してlistへリダイレクトします。
-			user.setName(userDTO.getName());
+			loginUser.setName(userDTO.getName());
 			throw new RedirectException("list");
 		}
 		return "ユーザ名またはパスワードが異なります";
@@ -66,7 +66,7 @@ public class MyResources {
 	@Path("list")
 	@Template(name = "/message")
 	public String getMessage() {
-		if (user.getName() == null) {
+		if (loginUser.getName() == null) {
 			// 認証に成功していない場合は、loginへリダイレクト
 			throw new RedirectException("login");
 		}
@@ -81,11 +81,11 @@ public class MyResources {
 		/*
 		 * フォーム側にidの値はないので0が入っています。
 		 * nameの値もないのでnullが入っています。
-		 * ログインしているので、nameの値はuser.getName()で取得します。
+		 * ログインしているので、nameの値はloginUser.getName()で取得します。
 		 * フォームから取得するパラメータが少ないので、
 		 * @BeanParamではなく@FormParamでも十分ですが、参考まで。
 		 */
-		mes.setName(user.getName());
+		mes.setName(loginUser.getName());
 		messageDAO.create(mes);
 		messageDAO.getAll();
 		return "";

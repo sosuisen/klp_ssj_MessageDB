@@ -9,7 +9,7 @@
 <title>メッセージの累積</title>
 </head>
 <body>
-	${user.name}さん、こんにちは！
+	${loginUser.name}さん、こんにちは！
 	<hr>
 	<form action="list" method="POST">
 		メッセージ：<input type="text" name="message">
